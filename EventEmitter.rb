@@ -15,7 +15,7 @@ module EventEmitter
     @cbMap[event] ||= []
   end
 
-  def on(event, function)
+  def on(event, &function)
     emit('newListener', [event, function])
     @registrar_index += 1
     @registrar[@registrar_index] = function
@@ -23,11 +23,11 @@ module EventEmitter
     @registrar_index
   end
 
-  def once(event, function)
-    id = on(event, lambda { |*args|
+  def once(event, &function)
+    id = on(event) { |*args|
       function.call(*args)
       removeListener(event, id) 
-    })
+    }
   end
 
   def setMaxListeners(n); end
