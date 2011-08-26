@@ -1,3 +1,7 @@
+# EventEmitter-ruby
+# Copyright(c) 2011 Oblong <chris@oblong.com>
+# MIT Licensed
+
 module EventEmitter
 
   def listeners(event = nil)
