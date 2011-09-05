@@ -5,7 +5,9 @@
 module EventEmitter
 
   def listeners(event = nil)
-    (get event).map { | which | @registrar[which] }
+    (get event).map do | which | 
+      @registrar[which] 
+    end
   end
 
   def get(event = nil)
@@ -28,10 +30,10 @@ module EventEmitter
   end
 
   def once(event, &function)
-    id = on(event) { |*args|
+    id = on(event) do |*args|
       function.call(*args)
       removeListener(event, id) 
-    }
+    end 
   end
 
   def setMaxListeners(n); end
@@ -40,23 +42,28 @@ module EventEmitter
 
   def removeListener(event, function)
     if function.class == Fixnum
-      get(event).reject! { | handle | handle == function }
+      get(event).reject! do | handle | 
+        handle == function 
+      end
     else
-      get(event).reject! { | handle | @registrar[handle] == function }
+      get(event).reject! do | handle | 
+        @registrar[handle] == function
+      end
     end
   end
 
   def removeAllListeners(event)
-    get(event).each { | index |
+    get(event).each do | index |
       @registrar.delete index
-    }
+    end 
+
     get(event).clear
   end
 
   def emit(event, *args)
-    get(event).each { | index |
+    get(event).each do | index |
       @registrar[index].call(*args)
-    }
+    end 
   end
 end
 
