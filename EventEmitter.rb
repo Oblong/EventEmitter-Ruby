@@ -65,5 +65,13 @@ module EventEmitter
       @registrar[index].call(*args)
     end 
   end
+
+  # Duplication because socket.io likes
+  # to override the emit
+  def _emit(event, *args)
+    get(event).each do | index |
+      @registrar[index].call(*args)
+    end 
+  end
 end
 
