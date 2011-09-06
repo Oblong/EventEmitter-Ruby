@@ -5,27 +5,16 @@
 module EventEmitter
 
   def listeners(event = nil)
-    (get event).map do | which | 
+    (_get event).map do | which | 
       @registrar[which] 
     end
-  end
-
-  def get(event = nil)
-    # This is needed for once, unless
-    # you have a better idea how to 
-    # implement it
-    @registrar ||= {}
-    @registrar_index ||= 1
-
-    @cbMap ||= {}
-    @cbMap[event] ||= []
   end
 
   def on(event, &function)
     emit('newListener', [event, function])
     @registrar_index += 1
     @registrar[@registrar_index] = function
-    (get event) << @registrar_index
+    (_get event) << @registrar_index
     @registrar_index
   end
 
@@ -42,26 +31,26 @@ module EventEmitter
 
   def removeListener(event, function)
     if function.class == Fixnum
-      get(event).reject! do | handle | 
+      _get(event).reject! do | handle | 
         handle == function 
       end
     else
-      get(event).reject! do | handle | 
+      _get(event).reject! do | handle | 
         @registrar[handle] == function
       end
     end
   end
 
   def removeAllListeners(event)
-    get(event).each do | index |
+    _get(event).each do | index |
       @registrar.delete index
     end 
 
-    get(event).clear
+    _get(event).clear
   end
 
   def emit(event, *args)
-    get(event).each do | index |
+    _get(event).each do | index |
       @registrar[index].call(*args)
     end 
   end
@@ -69,9 +58,22 @@ module EventEmitter
   # Duplication because socket.io likes
   # to override the emit
   def _emit(event, *args)
-    get(event).each do | index |
+    _get(event).each do | index |
       @registrar[index].call(*args)
     end 
+  end
+
+  private
+
+  def _get(event = nil)
+    # This is needed for once, unless
+    # you have a better idea how to 
+    # implement it
+    @registrar ||= {}
+    @registrar_index ||= 1
+
+    @cbMap ||= {}
+    @cbMap[event] ||= []
   end
 end
 
